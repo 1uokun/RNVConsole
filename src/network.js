@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native'
 import event from './event'
-import { debounce } from './tool'
+import { debounce,blackListReg } from './tool'
 
 let ajaxStack = null
 
@@ -361,7 +361,7 @@ function unixId() {
   return Math.round(Math.random() * 1000000).toString(16)
 }
 
-function proxyAjax(XHR, stack) {
+function proxyAjax(XHR, stack,blackList) {
   if (!XHR) {
     return
   }
@@ -407,16 +407,17 @@ function proxyAjax(XHR, stack) {
         }
       } else if (XMLReq.readyState === 2) {
         // HEADERS_RECEIVED
-        item.responseHeader = {}
-        const arr = headers.trim().split(/[\r\n]+/)
+        // TODO: headers is not defined @luokun
+        // item.responseHeader = {}
+        // const arr = headers.trim().split(/[\r\n]+/)
 
-        // Create a map of header names to values
-        arr.forEach(line => {
-          const parts = line.split(': ')
-          const header = parts.shift()
-          const value = parts.join(': ')
-          item.responseHeader[header] = value
-        })
+        // // Create a map of header names to values
+        // arr.forEach(line => {
+        //   const parts = line.split(': ')
+        //   const header = parts.shift()
+        //   const value = parts.join(': ')
+        //   item.responseHeader[header] = value
+        // })
       } else if (XMLReq.readyState === 3) {
         // LOADING
       } else if (XMLReq.readyState === 4) {
@@ -430,7 +431,9 @@ function proxyAjax(XHR, stack) {
       }
 
       if (!XMLReq._noVConsole) {
-        stack.updateRequest(id, item)
+        if(!blackListReg(blackList,url)){
+          stack.updateRequest(id, item)
+        }
       }
       return _onreadystatechange.apply(XMLReq, args)
     }
@@ -488,7 +491,9 @@ function proxyAjax(XHR, stack) {
     }
 
     if (!XMLReq._noVConsole) {
-      stack.updateRequest(XMLReq._requestID, item)
+      if(!blackListReg(blackList,XMLReq._url)){
+        stack.updateRequest(XMLReq._requestID, item)
+      }
     }
 
     return _send.apply(XMLReq, args)

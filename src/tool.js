@@ -47,7 +47,22 @@ function debounce(delay, atBegin, callback) {
     : throttle(delay, callback, atBegin !== false)
 }
 
+function blackListReg(list,url){
+  let bool = false;
+  let len = Array.isArray(list)?list.length:0
+  for(let i=0;i<len;i++){
+      if(url.indexOf(list[i])!==-1){
+      // if(new RegExp(`^([a-z|A-Z])+?://([^/?#]+[.])?(${list[i]})?(/.*)?$`).test(url)){
+          bool = true;
+          break;
+      }
+  }
+
+  return bool;
+}
+
 module.exports = {
   throttle,
-  debounce
+  debounce,
+  blackListReg
 }

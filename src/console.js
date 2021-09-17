@@ -122,7 +122,7 @@ class Console extends Component {
         extraData={this.state}
         data={this.state.logs}
         renderItem={this.renderLogItem}
-        ListEmptyComponent={() => <Text> Loading...</Text>}
+        ListEmptyComponent={() => <Text> Loading...</Text>}// TODO: clear之后再addLog不会刷新 @luokun
         keyExtractor={item => item.id}
       />
     )
